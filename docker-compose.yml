@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  localdeck:
+    build: .
+    network_mode: host
+    restart: unless-stopped
+    volumes:
+      - localdeck-data:/data
+
+volumes:
+  localdeck-data:

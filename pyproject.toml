@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "localdeck"
+version = "0.1.0"
+description = "LocalDeck — automatic localhost service discovery and dashboard"
+authors = ["pavelkrejci"]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.95.0"
+httpx = {extras=["http2"],version="^0.24.0"}
+sqlmodel = "^0.0.8"
+jinja2 = "^3.1.0"
+uvicorn = {extras=["standard"],version="^0.22.0"}
+ASGIRef = "^3.5.2"
+
+[tool.poetry.scripts]
+localdeck = "localdeck.cli:main"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

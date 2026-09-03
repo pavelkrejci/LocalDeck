@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>LocalDeck</title>
+    <style>
+      body { font-family: sans-serif; padding: 1rem }
+      .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: 1rem }
+      .card { border: 1px solid #ddd; padding: 0.6rem; border-radius: 6px }
+      .title { font-weight: 600 }
+      .meta { color: #666; font-size: 0.9rem }
+    </style>
+  </head>
+  <body>
+    <h1>LocalDeck</h1>
+    <div class="grid">
+    {% for s in services %}
+      <div class="card">
+        <div class="title">{{ s.title or 'unknown' }}</div>
+        <div class="meta">{{ s.name or (s.title or '') }} — {{ s.scheme or 'http' }}://{{ s.host }}:{{ s.port }}</div>
+        <div><a href="{{ s.scheme or 'http' }}://{{ s.host }}:{{ s.port }}" target="_blank">Open upstream</a></div>
+      </div>
+    {% endfor %}
+    </div>
+  </body>
+</html>
