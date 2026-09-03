@@ -2,6 +2,10 @@ from sqlmodel import SQLModel, Field, Session, create_engine, select
 from typing import Optional, List
 from datetime import datetime
 import os
+from .naming import generate_hostname_for
+import logging
+
+logger = logging.getLogger("localdeck.models")
 
 DB_PATH = os.environ.get("LOCALDECK_DB", "localdeck.sqlite")
 engine = create_engine(f"sqlite:///{DB_PATH}", echo=False)
@@ -15,6 +19,8 @@ class Service(SQLModel, table=True):
     title: Optional[str]
     icon: Optional[str]
     name: Optional[str]
+    hostname: Optional[str]
+    caddy_managed: Optional[bool] = False
     first_seen: Optional[datetime]
     last_seen: Optional[datetime]
 
@@ -36,8 +42,12 @@ def upsert_service(meta: dict):
         existing.title = meta.get("title")
         existing.icon = meta.get("icon")
         existing.last_seen = now
+        # ensure hostname exists
+        if not existing.hostname:
+            existing.hostname = generate_hostname_for(existing)
         sess.add(existing)
         sess.commit()
+        logger.info("updated service %s:%s", existing.host, existing.port)
         return existing
     else:
         s = Service(
@@ -48,11 +58,16 @@ def upsert_service(meta: dict):
             title=meta.get("title"),
             icon=meta.get("icon"),
             name=None,
+            hostname=None,
+            caddy_managed=False,
             first_seen=now,
             last_seen=now,
         )
+        # assign a stable hostname now
+        s.hostname = generate_hostname_for(s)
         sess.add(s)
         sess.commit()
+        logger.info("inserted service %s:%s", s.host, s.port)
         return s
 
 def list_services() -> List[Service]:
